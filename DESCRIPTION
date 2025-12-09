@@ -1,9 +1,9 @@
 Package: quacker
-Title: What the Package Does (One Line, Title Case)
+Title: Quality Analysis and Quality Control
 Version: 0.0.0.9000
 Authors@R: 
-    person("Brayden", "Nilson", , "nilson.brayden@gmail.com", role = "ctb")
-Description: What the package does (one paragraph).
+    person("Brayden", "Nilson", , "nilson.brayden@gmail.com", role = c("aut", "cre"))
+Description: Formalizes common Quality Analysis and Quality Control (QA/QC) methods used in data science. 
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -15,5 +15,8 @@ Imports:
     dplyr,
     handyr,
     lubridate,
+    rlang,
     tidyr,
     tidyselect
+Depends:
+    R (>= 4.1.0)
