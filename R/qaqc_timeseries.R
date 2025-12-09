@@ -61,28 +61,14 @@ qaqc_timeseries <- function(
         assessments,
         .names = ".flag_{.col}_{.fn}"
       )
+    ) |>
+    # build combined binary flag column for each value
+    # and move seperated flags to a list column
+    combine_flags(
+      value_cols = value_cols,
+      flag_prefix = ".flag_",
+      list_prefix = ".flags_"
     )
-
-  # build combined binary flag column for each value
-  # and move seperated flags to a list column
-  for (col in names(value_cols)) {
-    combined_col <- paste0(".flag_", col)
-    list_col <- paste0(".flags_", col)
-    flags <- dplyr::starts_with(combined_col) |>
-      tidyselect::eval_select(data = flagged)
-    flagged <- flagged |>
-      dplyr::mutate(
-        !!combined_col := rowSums(
-          dplyr::across(dplyr::all_of(flags), \(x) {
-            flag_number <- which(names(flags) == dplyr::cur_column())
-            as.integer(x) * 2^(flag_number - 1)
-          }),
-          na.rm = TRUE
-        ),
-        !!combined_col := as.integer(.data[[combined_col]])
-      ) |>
-      tidyr::nest(!!list_col := dplyr::any_of(names(flags)))
-  }
 
   # revert gap-filling and sorting
   flagged |>
