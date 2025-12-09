@@ -21,3 +21,36 @@ test_that("basic case works", {
     print(n = 24) |> 
     expect_snapshot()
 })
+
+test_that("assessing repeats works", {
+  test_values <- 1:10
+  for_repeats <- 1:5
+
+  repeated_values <- for_repeats |>
+    lapply(\(reps) rep(test_values, each = reps))
+
+  for (n_repeats in for_repeats) {
+    values <- repeated_values[[n_repeats]]
+    # Expect all repeats if threshold just below # of repeats (except the non-repeating case)
+    if (n_repeats != 1) {
+      expect_true(all(assess_repeating(values, max_repeats = n_repeats - 1)))
+    }
+    # Expect no repeats if threshold at # of repeats
+    expect_true(!any(assess_repeating(values, max_repeats = n_repeats)))
+  }
+})
+
+test_that("assessing spikes works", {
+  test_values <- 1:10 |> c(12, 14:20, 100, 0, 0, 0, 0)
+  time_step <- "1 hours"
+  max_steps <- list("1 hours" = 2, "3 hours" = 50)
+
+  is_spiking <- test_values |>
+    assess_spiking(max_steps = max_steps, time_step = time_step)
+
+  # spikes are 12, 14, 100, and all but the last 0
+  expect_true(identical(
+    c(which(is_spiking), length(test_values)), # pretend last 0 is a spike
+    which(test_values %in% c(12, 14, 100, 0))
+  ))
+})
