@@ -7,6 +7,7 @@ qaqc_timeseries <- function(
   date_col,
   value_cols,
   time_step = NA,
+  precision = Inf,
   allowed_range = c(-Inf, Inf),
   allowed_steps = list("1 hours" = Inf),
   allowed_repeats = 3
@@ -61,8 +62,12 @@ qaqc_timeseries <- function(
     # fill time gaps, marking added rows
     dplyr::mutate(.original_order = dplyr::row_number()) |>
     gapfill_timeseries(date_col = date_col, time_step = time_step) |>
-    # apply assessments to each value column
+    # round to precision and apply assessments to each value column
     dplyr::mutate(
+      dplyr::across(
+        dplyr::all_of(value_cols),
+        \(x) if (is.integer(x)) x else round(x, precision)
+      ),
       dplyr::across(
         dplyr::all_of(value_cols),
         assessments,
