@@ -17,17 +17,9 @@ qaqc_timeseries <- function(
   )
   # date_col & value_cols validated later
 
-  # handle tidyselect for date_col and value_cols
-  date_col <- date_col |> tidyselect::eval_select(data = ts_data)
-  date_col_str <- names(date_col)
+  # handle tidyselect for value_cols
   value_cols <- value_cols |> tidyselect::eval_select(data = ts_data)
-
-  # validate date_col/value_cols
-  single_date_col <- length(date_col) == 1
   multiple_value_cols <- length(date_col) > 0
-  stopifnot(
-    "`date_col` must resolve to a single column in `ts_data` using tidyselect (ex. date_utc, 'date_utc' or dplyr::starts_with('date'))" = single_date_col
-  )
   stopifnot(
     "`value_cols` must resolve to one or more columns in `ts_data` using tidyselect (ex. c(value_a, value_b), c('value_a', 'value_b') or dplyr::starts_with('value_'))" = multiple_value_cols
   )
@@ -37,17 +29,10 @@ qaqc_timeseries <- function(
     time_step <- handyr::get_step(ts_data[[date_col]])
   }
 
-  # fill time gaps, marking added rows - abstract this to a separate function?
+  # fill time gaps, marking added rows
   data_for_qc <- ts_data |>
     dplyr::mutate(.original_order = dplyr::row_number()) |>
-    tidyr::complete(
-      {{ date_col_str }} := seq(
-        min(.data[[date_col_str]], na.rm = TRUE),
-        max(.data[[date_col_str]], na.rm = TRUE),
-        by = time_step
-      )
-    ) |>
-    dplyr::arrange(.data[[date_col_str]])
+    gapfill_timeseries(date_col = date_col, time_step = time_step)
 
   # define assessments
   assessments <- list(
