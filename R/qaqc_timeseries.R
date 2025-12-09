@@ -52,14 +52,9 @@ qaqc_timeseries <- function(
   # define assessments
   assessments <- list(
     # assess missingness
-    is_missing = is.na,
+    is_missing = assess_missing,
     # assess out-of-range-ness
-    is_out_of_range = \(x) {
-      result <- rep(FALSE, length(x))
-      result[x < min(allowed_range, na.rm = TRUE)] <- TRUE
-      result[x > max(allowed_range, na.rm = TRUE)] <- TRUE
-      return(result)
-    },
+    is_out_of_range = \(x) x |> assess_range(range = allowed_range),
     # assess repeatedness
     is_repeating = \(x) x |> assess_repeating(max_repeats = allowed_repeats),
     is_repeating_at_range = \(x) {
@@ -150,4 +145,15 @@ assess_spiking <- function(x, max_steps = list("1 hours" = Inf), time_step) {
     }
   }
   return(is_spiking)
+}
+
+assess_range <- function(x, range) {
+  outside_range <- rep(FALSE, length(x))
+  outside_range[x < min(range, na.rm = TRUE)] <- TRUE
+  outside_range[x > max(range, na.rm = TRUE)] <- TRUE
+  return(outside_range)
+}
+
+assess_missing <- function(x) {
+  is.na(x)
 }

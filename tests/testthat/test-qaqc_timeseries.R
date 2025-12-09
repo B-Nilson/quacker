@@ -54,3 +54,18 @@ test_that("assessing spikes works", {
     which(test_values %in% c(12, 14, 100, 0))
   ))
 })
+
+test_that("assessing range works", {
+  test_values <- 1:10
+  expect_true(!any(assess_range(test_values, range = range(test_values))))
+  expect_true(all(assess_range(test_values, range = range(test_values) - max(test_values))))
+  expect_true(all(assess_range(test_values, range = range(test_values) + max(test_values))))
+})
+
+test_that("assessing missingness works", {
+  test_values <- c(NA, NA, 1:10)
+  is_missing <- assess_missing(test_values)
+  expect_true(!any(is_missing[-(1:2)]))
+  expect_true(all(is_missing[1:2]))
+  expect_true(!all(is_missing))
+})
