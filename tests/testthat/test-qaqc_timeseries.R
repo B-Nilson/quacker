@@ -17,8 +17,8 @@ test_that("basic case works", {
     allowed_range = c(0, 80),
     allowed_steps = list("1 hours" = 5, "3 hours" = 100),
     allowed_repeats = 3
-  ) |> 
-    print(n = 24) |> 
+  ) |>
+    print(n = 24) |>
     expect_snapshot()
 })
 
@@ -58,8 +58,14 @@ test_that("assessing spikes works", {
 test_that("assessing range works", {
   test_values <- 1:10
   expect_true(!any(assess_range(test_values, range = range(test_values))))
-  expect_true(all(assess_range(test_values, range = range(test_values) - max(test_values))))
-  expect_true(all(assess_range(test_values, range = range(test_values) + max(test_values))))
+  expect_true(all(assess_range(
+    test_values,
+    range = range(test_values) - max(test_values)
+  )))
+  expect_true(all(assess_range(
+    test_values,
+    range = range(test_values) + max(test_values)
+  )))
 })
 
 test_that("assessing missingness works", {
