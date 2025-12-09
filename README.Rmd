@@ -18,7 +18,9 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of quacker is to ...
+The goal of quacker is to improve the ease and consistency of quality analysis and quality control (QA/QC) methods used in data science.
+
+quacker is still in active development.
 
 ## Installation
 
@@ -31,9 +33,49 @@ pak::pak("B-Nilson/quacker")
 
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
+Here is how you can use quaker to QA/QC timeseries data:
 
 ```{r example}
 library(quacker)
-## basic example code
+
+example_ts <- data.frame(
+  date = seq(
+    lubridate::ymd_h("2022-01-01 00"),
+    lubridate::ymd_h("2022-01-01 23"),
+    by = "1 hour"
+  ),
+  value_a = 1:24,
+  value_b = rep(1:6, each = 3) |> c(100, 0, 0, 0, 0, NA)
+)
+
+flagged_data <- qaqc_timeseries(
+  ts_data = example_ts,
+  date_col = "date",
+  value_cols = c("value_a", "value_b"),
+  allowed_range = c(0, 80),
+  allowed_steps = list("1 hours" = 5, "3 hours" = 100),
+  allowed_repeats = 3
+)
+
+flagged_data |>
+  dplyr::select(-"date") |> # for cleaner printing
+  print(n = 24)
+
+plot(
+  x = flagged_data$date,
+  y = flagged_data$value_b,
+  type = "l",
+  main = "Noisy Timeseries",
+  ylab = "raw value_b",
+  xlab = "date"
+)
+
+plot(
+  x = flagged_data$date,
+  y = flagged_data$value_b |> handyr::swap(flagged_data$.flag_value_b > 0, with = NA),
+  type = "l",
+  main = "Cleaned Timeseries",
+  ylab = "cleaned value_b",
+  xlab = "date"
+)
 ```
