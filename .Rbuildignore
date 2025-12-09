@@ -1,0 +1,8 @@
+^renv$
+^renv\.lock$
+^quacker\.Rproj$
+^\.Rproj\.user$
+^[.]?air[.]toml$
+^\.vscode$
+^LICENSE\.md$
+^README\.Rmd$
