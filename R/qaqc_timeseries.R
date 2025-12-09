@@ -55,16 +55,16 @@ qaqc_timeseries <- function(
     is_missing = assess_missing,
     # assess out-of-range-ness
     is_out_of_range = \(x) x |> assess_range(range = allowed_range),
+    # assess spikes
+    is_spiking = \(x) {
+      x |> assess_spiking(max_steps = allowed_steps, time_step = time_step)
+    },
     # assess repeatedness
     is_repeating = \(x) x |> assess_repeating(max_repeats = allowed_repeats),
     is_repeating_at_range = \(x) {
       is_repeating <- x |> assess_repeating(max_repeats = allowed_repeats)
       is_repeating[!x %in% allowed_range] <- FALSE
       return(is_repeating)
-    },
-    # assess spikes
-    is_spiking = \(x) {
-      x |> assess_spiking(max_steps = allowed_steps, time_step = time_step)
     }
   )
 
