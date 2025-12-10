@@ -11,6 +11,7 @@ qaqc_timeseries(
   time_step = NA,
   precision = Inf,
   rolling = NA,
+  rolling_only = FALSE,
   allowed_range = c(-Inf, Inf),
   allowed_steps = list(`1 hours` = Inf),
   allowed_repeats = Inf
@@ -33,6 +34,8 @@ rounded before assessments. Default is \code{Inf}, meaning no rounding is done.}
 
 \item{rolling}{A character string or a \code{Period} object (such as \code{"3 hours"}), the time step of observations to average over for rolling average checks.
 Default is \code{NA}, meaning no rolling average checking is done.}
+
+\item{rolling_only}{A logical value, whether to only check rolling averages instead of the raw values. Default is \code{FALSE}.}
 
 \item{allowed_range}{A numeric vector of length 2, the allowed range of
 values. Default is \code{c(-Inf, Inf)}, meaning no range checking is done.}

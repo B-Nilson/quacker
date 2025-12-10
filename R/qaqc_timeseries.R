@@ -14,6 +14,7 @@
 #' rounded before assessments. Default is `Inf`, meaning no rounding is done.
 #' @param rolling A character string or a `Period` object (such as `"3 hours"`), the time step of observations to average over for rolling average checks.
 #' Default is `NA`, meaning no rolling average checking is done.
+#' @param rolling_only A logical value, whether to only check rolling averages instead of the raw values. Default is `FALSE`.
 #' @param allowed_range A numeric vector of length 2, the allowed range of
 #' values. Default is `c(-Inf, Inf)`, meaning no range checking is done.
 #' @param allowed_steps A named list, the allowed steps in the timeseries.
@@ -35,6 +36,7 @@ qaqc_timeseries <- function(
   time_step = NA,
   precision = Inf,
   rolling = NA,
+  rolling_only = FALSE,
   allowed_range = c(-Inf, Inf),
   allowed_steps = list("1 hours" = Inf),
   allowed_repeats = Inf
@@ -52,6 +54,7 @@ qaqc_timeseries <- function(
     !anyNA(lubridate::as.period(names(allowed_steps)))
   )
   stopifnot(is.numeric(allowed_repeats), length(allowed_repeats) == 1)
+  stopifnot(is.logical(rolling_only), length(rolling_only) == 1)
 
   # try to guess date_col if not provided
   if (is.null(date_col)) {
@@ -145,8 +148,15 @@ qaqc_timeseries <- function(
           .names = "rolling_{.col}_" |> paste0(rolling_name)
         )
       )
-    rolling_columns <- paste0("rolling_", names(value_cols), "_", rolling_name)
-    value_cols[rolling_columns] <- match(rolling_columns, names(ts_data))
+    rolling_columns <- paste0("rolling_", names(value_cols), "_", rolling_name) |> 
+      match(names(ts_data))
+    names(rolling_columns) <- names(ts_data)[rolling_columns]
+
+    if (rolling_only) {
+      value_cols <- rolling_columns
+    }else {
+      value_cols[names(rolling_columns)] <- unname(rolling_columns) 
+    }
   }
 
   ts_data |>
