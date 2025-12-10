@@ -5,7 +5,7 @@
         "value_a", "value_b"), allowed_range = c(0, 80), allowed_steps = list(
         `1 hours` = 5, `3 hours` = 100), allowed_repeats = 3), n = 24)
     Output
-      # A tibble: 23 x 7
+      # A tibble: 23 x 9
          date                value_a value_b .flag_value_a .flags_value_a  
          <dttm>                <int>   <dbl>         <int> <list>          
        1 2022-01-01 00:00:00       1       1             0 <tibble [1 x 5]>
@@ -31,5 +31,6 @@
       21 2022-01-01 21:00:00      22       0             0 <tibble [1 x 5]>
       22 2022-01-01 22:00:00      23       0             0 <tibble [1 x 5]>
       23 2022-01-01 23:00:00      24      NA             0 <tibble [1 x 5]>
-      # i 2 more variables: .flag_value_b <int>, .flags_value_b <list>
+      # i 4 more variables: .flag_name_value_a <chr>, .flag_value_b <int>,
+      #   .flags_value_b <list>, .flag_name_value_b <chr>
 

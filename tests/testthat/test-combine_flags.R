@@ -23,7 +23,8 @@ test_that("basic case works", {
     combine_flags(
       value_cols = c("value_a", "value_b"),
       flag_prefix = ".flag_",
-      list_prefix = ".flag_list_"
+      list_prefix = ".flag_list_",
+      name_prefix = ".flag_name_"
     ) |>
     print(n = 24) |>
     expect_snapshot()
