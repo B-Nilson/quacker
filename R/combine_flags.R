@@ -58,7 +58,10 @@ combine_flags <- function(
               ) |>
               gsub(pattern = "_", replacement = " ") |>
               paste(collapse = ", ") |>
-              gsub(pattern = "repeating, repeating at range", replacement = "repeating at range") |>
+              gsub(
+                pattern = "repeating, repeating at range",
+                replacement = "repeating at range"
+              ) |>
               handyr::swap("", with = NA_character_)
           })
       )

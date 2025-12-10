@@ -59,9 +59,11 @@ qaqc_timeseries <- function(
 
   # try to guess date_col if not provided
   if (is.null(rlang::enquo(date_col))) {
-    warning("guessing `date_col` from `ts_data` - set `date_col` directly to quiet this warning")
-    date_col <- ts_data |> 
-      sapply(\(x) lubridate::is.Date(x) | lubridate::is.POSIXct(x)) |> 
+    warning(
+      "guessing `date_col` from `ts_data` - set `date_col` directly to quiet this warning"
+    )
+    date_col <- ts_data |>
+      sapply(\(x) lubridate::is.Date(x) | lubridate::is.POSIXct(x)) |>
       which()
     if (length(date_col) == 0) {
       stop(
@@ -73,8 +75,10 @@ qaqc_timeseries <- function(
 
   # try to guess value_cols if not provided
   if (is.null(rlang::enquo(value_cols))) {
-    warning("guessing `value_cols` from `ts_data` using `dplyr::where(is.numeric)` - set `value_cols` directly to quiet this warning")
-    value_cols <- dplyr::where(is.numeric) |> 
+    warning(
+      "guessing `value_cols` from `ts_data` using `dplyr::where(is.numeric)` - set `value_cols` directly to quiet this warning"
+    )
+    value_cols <- dplyr::where(is.numeric) |>
       tidyselect::eval_select(data = ts_data)
     if (length(value_cols) < 1) {
       stop(
@@ -161,14 +165,15 @@ qaqc_timeseries <- function(
           .names = "rolling_{.col}_" |> paste0(rolling_name)
         )
       )
-    rolling_columns <- paste0("rolling_", names(value_cols), "_", rolling_name) |> 
+    rolling_columns <- "rolling_" |>
+      paste0(names(value_cols), "_", rolling_name) |>
       match(names(ts_data))
     names(rolling_columns) <- names(ts_data)[rolling_columns]
 
     if (rolling_only) {
       value_cols <- rolling_columns
-    }else {
-      value_cols[names(rolling_columns)] <- unname(rolling_columns) 
+    } else {
+      value_cols[names(rolling_columns)] <- unname(rolling_columns)
     }
   }
 
