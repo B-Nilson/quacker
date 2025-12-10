@@ -58,7 +58,7 @@ qaqc_timeseries <- function(
   stopifnot(is.logical(rolling_only), length(rolling_only) == 1)
 
   # try to guess date_col if not provided
-  if (is.null(date_col)) {
+  if (is.null(rlang::enquo(date_col))) {
     warning("guessing `date_col` from `ts_data` - set `date_col` directly to quiet this warning")
     date_col <- ts_data |> 
       sapply(\(x) lubridate::is.Date(x) | lubridate::is.POSIXct(x)) |> 
@@ -72,7 +72,7 @@ qaqc_timeseries <- function(
   }
 
   # try to guess value_cols if not provided
-  if (is.null(value_cols)) {
+  if (is.null(rlang::enquo(value_cols))) {
     warning("guessing `value_cols` from `ts_data` using `dplyr::where(is.numeric)` - set `value_cols` directly to quiet this warning")
     value_cols <- dplyr::where(is.numeric) |> 
       tidyselect::eval_select(data = ts_data)
