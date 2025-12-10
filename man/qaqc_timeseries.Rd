@@ -6,7 +6,7 @@
 \usage{
 qaqc_timeseries(
   ts_data,
-  date_col,
+  date_col = NULL,
   value_cols,
   time_step = NA,
   precision = Inf,
@@ -20,7 +20,8 @@ qaqc_timeseries(
 \item{ts_data}{A data frame with at least a date column and one or more value
 columns.}
 
-\item{date_col}{A tidyselect expression that resolves to a single column in \code{ts_data} with dates.}
+\item{date_col}{A tidyselect expression that resolves to a single column in \code{ts_data} with dates.
+Default is \code{NULL}, which will use the first date column from \code{ts_data}.}
 
 \item{value_cols}{A tidyselect expression that resolves to one or more columns in \code{ts_data} with values to check.}
 

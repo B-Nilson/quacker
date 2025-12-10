@@ -6,6 +6,7 @@
 #' @param ts_data A data frame with at least a date column and one or more value
 #' columns.
 #' @param date_col A tidyselect expression that resolves to a single column in `ts_data` with dates.
+#'   Default is `NULL`, which will use the first date column from `ts_data`.
 #' @param value_cols A tidyselect expression that resolves to one or more columns in `ts_data` with values to check.
 #' @param time_step A character string or a `Period` object, the time
 #' step of the timeseries. If `NA` provided, the most common time step is determined using [handyr::get_step].
@@ -29,7 +30,7 @@
 #' @importFrom rlang .data `:=`
 qaqc_timeseries <- function(
   ts_data,
-  date_col,
+  date_col = NULL,
   value_cols,
   time_step = NA,
   precision = Inf,
@@ -51,6 +52,20 @@ qaqc_timeseries <- function(
     !anyNA(lubridate::as.period(names(allowed_steps)))
   )
   stopifnot(is.numeric(allowed_repeats), length(allowed_repeats) == 1)
+
+  # try to guess date_col if not provided
+  if (is.null(date_col)) {
+    warning("guessing `date_col` from `ts_data` - set `date_col` directly to quiet this warning")
+    date_col <- ts_data |> 
+      sapply(\(x) lubridate::is.Date(x) | lubridate::is.POSIXct(x)) |> 
+      which()
+    if (length(date_col) == 0) {
+      stop(
+        "if `date_col` is not provided, `ts_data` must contain at least one column with dates (the first column will be used)"
+      )
+    }
+    date_col <- date_col[1]
+  }
 
   # handle tidyselect for date_col
   date_col <- date_col |> tidyselect::eval_select(data = ts_data)
