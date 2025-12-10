@@ -240,9 +240,18 @@ assess_spiking <- function(x, max_steps = list("1 hours" = Inf), time_step) {
     identical(class(max_steps), "list"),
     length(max_steps) > 0,
     all(lengths(max_steps) == 1),
-    !anyNA(lubridate::as.period(names(max_steps)))
+    !anyNA(lubridate::as.period(names(max_steps))),
+    !anyNA(unlist(max_steps))
   )
 
+  # Handle edge case where data cannot possibly be spiking
+  smallest_threshold <- min(unlist(max_steps), na.rm = TRUE)
+  largest_diff <- max(x, na.rm = TRUE) - min(x, na.rm = TRUE)
+  if (largest_diff <= smallest_threshold) {
+    return(logical(length(x)))
+  }
+
+  # parse time_step and threshold periods
   time_step <- lubridate::as.period(time_step)
   threshold_periods <- lapply(names(max_steps), lubridate::as.period)
 
