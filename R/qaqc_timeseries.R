@@ -200,6 +200,9 @@ qaqc_timeseries <- function(
 
 assess_repeating <- function(x, max_repeats = 3) {
   stopifnot(is.numeric(max_repeats), max_repeats > 0, length(max_repeats) == 1)
+  if (max_repeats >= length(x)) {
+    return(logical(length(x)))
+  }
 
   # replace NA's with the min - 1 (i.e. not repeating)
   default <- min(x, na.rm = TRUE) - 1
