@@ -1,4 +1,3 @@
-# TODO: make rolling averages?
 # TODO: allow different ranges / repeats for different columns
 # TODO: flag_bad_sensor tried to allow for persitently low repeating values, not sure if that's useful
 
@@ -12,6 +11,8 @@
 #' step of the timeseries. If `NA` provided, the most common time step is determined using [handyr::get_step].
 #' @param precision A numeric value, the precision to which `value_cols` are
 #' rounded before assessments. Default is `Inf`, meaning no rounding is done.
+#' @param rolling A character string or a `Period` object (such as `"3 hours"`), the time step of observations to average over for rolling average checks.
+#' Default is `NA`, meaning no rolling average checking is done.
 #' @param allowed_range A numeric vector of length 2, the allowed range of
 #' values. Default is `c(-Inf, Inf)`, meaning no range checking is done.
 #' @param allowed_steps A named list, the allowed steps in the timeseries.
@@ -32,6 +33,7 @@ qaqc_timeseries <- function(
   value_cols,
   time_step = NA,
   precision = Inf,
+  rolling = NA,
   allowed_range = c(-Inf, Inf),
   allowed_steps = list("1 hours" = Inf),
   allowed_repeats = Inf
@@ -63,6 +65,18 @@ qaqc_timeseries <- function(
     time_step <- handyr::get_step(ts_data[[date_col]])
   }
 
+  # ensure valid rolling
+  if (!is.na(rolling)) {
+    rolling <- lubridate::as.period(rolling)
+    stopifnot(
+      "`rolling` must be interpretable as a `Period` object" = !is.na(rolling),
+      "`rolling` must be a larger multiple of `time_step`" = (rolling /
+        lubridate::as.period(time_step)) ==
+        round(rolling / lubridate::as.period(time_step)),
+      length(rolling) == 1
+    )
+  }
+
   # define assessments
   assessments <- list(
     # assess missingness
@@ -82,10 +96,38 @@ qaqc_timeseries <- function(
     }
   )
 
-  ts_data |>
-    # fill time gaps, marking added rows
+  # fill time gaps, marking added rows
+  ts_data <- ts_data |>
     dplyr::mutate(.original_order = dplyr::row_number()) |>
-    gapfill_timeseries(date_col = date_col, time_step = time_step) |>
+    gapfill_timeseries(date_col = date_col, time_step = time_step)
+
+  # add rolling average columns if requested
+  if (!is.na(rolling)) {
+    rolling_width <- rolling / lubridate::as.period(time_step)
+    rolling_name <- rolling |>
+      as.character() |>
+      gsub(pattern = " 0M| 0S", replacement = "")
+    ts_data <- ts_data |>
+      dplyr::mutate(
+        dplyr::across(
+          dplyr::all_of(value_cols),
+          \(x) {
+            x |>
+              handyr::rolling(
+                FUN = "mean",
+                .width = rolling_width,
+                .direction = "backward"
+              ) |>
+              round(digits = precision)
+          },
+          .names = "rolling_{.col}_" |> paste0(rolling_name)
+        )
+      )
+    rolling_columns <- paste0("rolling_", names(value_cols), "_", rolling_name)
+    value_cols[rolling_columns] <- match(rolling_columns, names(ts_data))
+  }
+
+  ts_data |>
     # round to precision and apply assessments to each value column
     dplyr::mutate(
       dplyr::across(
