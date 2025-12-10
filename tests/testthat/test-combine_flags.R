@@ -12,8 +12,8 @@ test_that("basic case works", {
       dplyr::across(
         dplyr::all_of(c("value_a", "value_b")),
         list(
-          is_missing = \(x) is.na(x),
-          is_out_of_range = \(x) x < 0 | x > 80
+          is_missing = \(x) assess_missing(x),
+          is_out_of_range = \(x) assess_range(x, range = c(0, 80))
         ),
         .names = ".flag_{.col}_{.fn}"
       )

@@ -259,10 +259,10 @@ assess_spiking <- function(x, max_steps = list("1 hours" = Inf), time_step) {
 
 assess_range <- function(x, range) {
   stopifnot(is.numeric(range), length(range) == 2)
-  outside_range <- logical(length(x))
-  is_outside <- x < min(range, na.rm = TRUE) | x > max(range, na.rm = TRUE)
-  outside_range[is_outside] <- TRUE
-  return(outside_range)
+  range <- sort(range)
+  is_outside <- x < range[1] | x > range[2]
+  is_outside[is.na(x)] <- FALSE
+  return(is_outside)
 }
 
 assess_missing <- function(x) {
