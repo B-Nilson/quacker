@@ -51,7 +51,14 @@ qaqc_timeseries <- function(
     !anyNA(lubridate::as.period(names(allowed_steps)))
   )
   stopifnot(is.numeric(allowed_repeats), length(allowed_repeats) == 1)
-  # date_col & value_cols validated later
+
+  # handle tidyselect for date_col
+  date_col <- date_col |> tidyselect::eval_select(data = ts_data)
+  date_col_str <- names(date_col)
+  single_date_col <- length(date_col) == 1
+  stopifnot(
+    "`date_col` must resolve to a single column in `ts_data` using tidyselect (ex. date_utc, 'date_utc' or dplyr::starts_with('date'))" = single_date_col
+  )
 
   # handle tidyselect for value_cols
   value_cols <- value_cols |> tidyselect::eval_select(data = ts_data)
