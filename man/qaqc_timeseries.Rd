@@ -7,7 +7,7 @@
 qaqc_timeseries(
   ts_data,
   date_col = NULL,
-  value_cols,
+  value_cols = NULL,
   time_step = NA,
   precision = Inf,
   rolling = NA,
@@ -24,7 +24,8 @@ columns.}
 \item{date_col}{A tidyselect expression that resolves to a single column in \code{ts_data} with dates.
 Default is \code{NULL}, which will use the first date column from \code{ts_data}.}
 
-\item{value_cols}{A tidyselect expression that resolves to one or more columns in \code{ts_data} with values to check.}
+\item{value_cols}{A tidyselect expression that resolves to one or more columns in \code{ts_data} with values to check.
+Default is \code{NULL}, which will use \code{dplyr::where(is.numeric)} to get all numeric columns from \code{ts_data}.}
 
 \item{time_step}{A character string or a \code{Period} object, the time
 step of the timeseries. If \code{NA} provided, the most common time step is determined using \link[handyr:get_step]{handyr::get_step}.}

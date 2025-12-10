@@ -8,6 +8,7 @@
 #' @param date_col A tidyselect expression that resolves to a single column in `ts_data` with dates.
 #'   Default is `NULL`, which will use the first date column from `ts_data`.
 #' @param value_cols A tidyselect expression that resolves to one or more columns in `ts_data` with values to check.
+#'   Default is `NULL`, which will use `dplyr::where(is.numeric)` to get all numeric columns from `ts_data`.
 #' @param time_step A character string or a `Period` object, the time
 #' step of the timeseries. If `NA` provided, the most common time step is determined using [handyr::get_step].
 #' @param precision A numeric value, the precision to which `value_cols` are
@@ -32,7 +33,7 @@
 qaqc_timeseries <- function(
   ts_data,
   date_col = NULL,
-  value_cols,
+  value_cols = NULL,
   time_step = NA,
   precision = Inf,
   rolling = NA,
@@ -68,6 +69,18 @@ qaqc_timeseries <- function(
       )
     }
     date_col <- date_col[1]
+  }
+
+  # try to guess value_cols if not provided
+  if (is.null(value_cols)) {
+    warning("guessing `value_cols` from `ts_data` using `dplyr::where(is.numeric)` - set `value_cols` directly to quiet this warning")
+    value_cols <- dplyr::where(is.numeric) |> 
+      tidyselect::eval_select(data = ts_data)
+    if (length(value_cols) < 1) {
+      stop(
+        "if `value_cols` is not provided, `ts_data` must contain at least one numeric column."
+      )
+    }
   }
 
   # handle tidyselect for date_col
