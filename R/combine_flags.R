@@ -30,7 +30,7 @@ combine_flags <- function(
     combined_col <- paste0(flag_prefix, value_col) # name for new combined column
     list_col <- paste0(list_prefix, value_col) # name for new list column
     name_col <- paste0(name_prefix, value_col) # name for new flag name column
-    flags <- dplyr::starts_with(combined_col) |> # names of existing flag columns
+    flags <- dplyr::starts_with(paste0(combined_col, "_is_")) |> # names of existing flag columns
       tidyselect::eval_select(data = flagged_data)
     flagged_data <- flagged_data |>
       # combine flags using binary (0/1 is first flag, 0/2 is second flag, 0/4 is third flag, etc.)
