@@ -1,4 +1,9 @@
-gapfill_timeseries <- function(ts_data, date_col = NULL, time_step = NA, sort = TRUE) {
+gapfill_timeseries <- function(
+  ts_data,
+  date_col = NULL,
+  time_step = NA,
+  sort = TRUE
+) {
   stopifnot(is.data.frame(ts_data))
   stopifnot(
     is.na(time_step) | !is.na(lubridate::as.period(time_step)),

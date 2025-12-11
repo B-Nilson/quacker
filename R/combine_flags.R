@@ -67,8 +67,8 @@ flags_to_binary_number <- function(flags) {
 }
 
 flags_from_binary_number <- function(binary_numbers, flag_names) {
-  seq_along(flag_names) |> 
-    lapply(\(i) bitwAnd(binary_numbers, 2^(i - 1)) != 0) |> 
+  seq_along(flag_names) |>
+    lapply(\(i) bitwAnd(binary_numbers, 2^(i - 1)) != 0) |>
     stats::setNames(flag_names) |>
     dplyr::bind_cols()
 }

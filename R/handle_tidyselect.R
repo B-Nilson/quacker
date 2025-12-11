@@ -51,8 +51,12 @@ guess_value_cols <- function(data, value_cols = NULL, exclude_dot_cols = TRUE) {
     }
     if (length(value_cols) < 1) {
       stop(
-        "if `value_cols` is not provided, provided data must contain at least one numeric column" |> 
-          paste(ifelse(exclude_dot_cols, " whose name does not start with `.`.", "."))
+        "if `value_cols` is not provided, provided data must contain at least one numeric column" |>
+          paste(ifelse(
+            exclude_dot_cols,
+            " whose name does not start with `.`.",
+            "."
+          ))
       )
     }
   }

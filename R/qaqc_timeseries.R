@@ -58,7 +58,7 @@ qaqc_timeseries <- function(
   stopifnot(is.logical(rolling_only), length(rolling_only) == 1)
 
   # try to guess date_col/value_cols if not provided, and handle tidyselect inputs
-  date_col <- date_col |> 
+  date_col <- date_col |>
     guess_date_col(date_col = date_col) |>
     handle_tidyselect(data = ts_data, .expect_one = TRUE)
   value_cols <- value_cols |>
