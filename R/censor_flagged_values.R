@@ -1,6 +1,6 @@
 censor_flagged_values <- function(
   qaqced_data,
-  value_cols,
+  value_cols = NULL,
   censored_to = "{.col}_censored",
   flag_prefix = ".flag_"
 ) {

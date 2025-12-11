@@ -16,6 +16,7 @@ gapfill_timeseries <- function(ts_data, date_col = NULL, time_step = NA, sort = 
   }
 
   # Fill in missing dates
+  date_col_str <- names(date_col)
   ts_data <- ts_data |>
     tidyr::complete(
       {{ date_col_str }} := seq(
@@ -24,7 +25,7 @@ gapfill_timeseries <- function(ts_data, date_col = NULL, time_step = NA, sort = 
         by = time_step
       )
     )
-  
+
   if (sort) {
     ts_data <- ts_data |>
       dplyr::arrange(.data[[date_col_str]])
