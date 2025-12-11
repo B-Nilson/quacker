@@ -26,7 +26,7 @@ guess_date_col <- function(data, date_col = NULL) {
     warning(
       "guessing `date_col` from provided data - set `date_col` directly to quiet this warning"
     )
-    date_col <- ts_data |>
+    date_col <- data |>
       sapply(\(x) lubridate::is.Date(x) | lubridate::is.POSIXct(x)) |>
       which()
     if (length(date_col) == 0) {
