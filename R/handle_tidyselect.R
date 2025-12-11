@@ -22,7 +22,7 @@ handle_tidyselect <- function(
 }
 
 guess_date_col <- function(data, date_col = NULL) {
-  if (is.null(rlang::enquo(date_col))) {
+  if (rlang::is_null(date_col)) {
     warning(
       "guessing `date_col` from provided data - set `date_col` directly to quiet this warning"
     )
@@ -40,7 +40,7 @@ guess_date_col <- function(data, date_col = NULL) {
 }
 
 guess_value_cols <- function(data, value_cols = NULL, exclude_dot_cols = TRUE) {
-  if (is.null(rlang::enquo(value_cols))) {
+  if (rlang::is_null(value_cols)) {
     warning(
       "guessing `value_cols` from provided data - set `value_cols` directly to quiet this warning"
     )
