@@ -1,4 +1,4 @@
-gapfill_timeseries <- function(ts_data, date_col, time_step = NA) {
+gapfill_timeseries <- function(ts_data, date_col, time_step = NA, sort = TRUE) {
   stopifnot(is.data.frame(ts_data))
   stopifnot(
     is.na(time_step) | !is.na(lubridate::as.period(time_step)),
@@ -18,13 +18,19 @@ gapfill_timeseries <- function(ts_data, date_col, time_step = NA) {
     time_step <- handyr::get_step(ts_data[[date_col]])
   }
 
-  ts_data |>
+  # Fill in missing dates
+  ts_data <- ts_data |>
     tidyr::complete(
       {{ date_col_str }} := seq(
         min(.data[[date_col_str]], na.rm = TRUE),
         max(.data[[date_col_str]], na.rm = TRUE),
         by = time_step
       )
-    ) |>
-    dplyr::arrange(.data[[date_col_str]])
+    )
+  
+  if (sort) {
+    ts_data <- ts_data |>
+      dplyr::arrange(.data[[date_col_str]])
+  }
+  return(ts_data)
 }

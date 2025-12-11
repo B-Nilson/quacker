@@ -141,7 +141,7 @@ qaqc_timeseries <- function(
   # fill time gaps, marking added rows
   ts_data <- ts_data |>
     dplyr::mutate(.original_order = dplyr::row_number()) |>
-    gapfill_timeseries(date_col = date_col, time_step = time_step)
+    gapfill_timeseries(date_col = date_col, time_step = time_step, sort = TRUE)
 
   # add rolling average columns if requested
   if (!is.na(rolling)) {
