@@ -57,50 +57,13 @@ qaqc_timeseries <- function(
   stopifnot(is.numeric(allowed_repeats), length(allowed_repeats) == 1)
   stopifnot(is.logical(rolling_only), length(rolling_only) == 1)
 
-  # try to guess date_col if not provided
-  if (is.null(rlang::enquo(date_col))) {
-    warning(
-      "guessing `date_col` from `ts_data` - set `date_col` directly to quiet this warning"
-    )
-    date_col <- ts_data |>
-      sapply(\(x) lubridate::is.Date(x) | lubridate::is.POSIXct(x)) |>
-      which()
-    if (length(date_col) == 0) {
-      stop(
-        "if `date_col` is not provided, `ts_data` must contain at least one column with dates (the first column will be used)"
-      )
-    }
-    date_col <- date_col[1]
-  }
-
-  # try to guess value_cols if not provided
-  if (is.null(rlang::enquo(value_cols))) {
-    warning(
-      "guessing `value_cols` from `ts_data` using `dplyr::where(is.numeric)` - set `value_cols` directly to quiet this warning"
-    )
-    value_cols <- dplyr::where(is.numeric) |>
-      tidyselect::eval_select(data = ts_data)
-    if (length(value_cols) < 1) {
-      stop(
-        "if `value_cols` is not provided, `ts_data` must contain at least one numeric column."
-      )
-    }
-  }
-
-  # handle tidyselect for date_col
-  date_col <- date_col |> tidyselect::eval_select(data = ts_data)
-  date_col_str <- names(date_col)
-  single_date_col <- length(date_col) == 1
-  stopifnot(
-    "`date_col` must resolve to a single column in `ts_data` using tidyselect (ex. date_utc, 'date_utc' or dplyr::starts_with('date'))" = single_date_col
-  )
-
-  # handle tidyselect for value_cols
-  value_cols <- value_cols |> tidyselect::eval_select(data = ts_data)
-  multiple_value_cols <- length(value_cols) > 0
-  stopifnot(
-    "`value_cols` must resolve to one or more columns in `ts_data` using tidyselect (ex. c(value_a, value_b), c('value_a', 'value_b') or dplyr::starts_with('value_'))" = multiple_value_cols
-  )
+  # try to guess date_col/value_cols if not provided, and handle tidyselect inputs
+  date_col <- date_col |> 
+    guess_date_col(date_col = date_col) |>
+    handle_tidyselect(data = ts_data, .expect_one = TRUE)
+  value_cols <- value_cols |>
+    guess_value_cols(data = ts_data) |>
+    handle_tidyselect(data = ts_data, .expect_some = TRUE)
 
   # determine time_step from ts_data if not provided
   if (is.na(time_step)) {

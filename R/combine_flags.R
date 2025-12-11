@@ -1,6 +1,6 @@
 combine_flags <- function(
   flagged_data,
-  value_cols,
+  value_cols = NULL,
   flag_prefix = ".flag_",
   list_prefix = ".flags_",
   name_prefix = ".flag_name_"
@@ -10,12 +10,9 @@ combine_flags <- function(
   stopifnot(is.character(list_prefix), length(list_prefix) == 1)
   stopifnot(is.character(name_prefix), length(name_prefix) == 1)
 
-  # handle tidyselect for value_cols
-  value_cols <- value_cols |> tidyselect::eval_select(data = flagged_data)
-  multiple_value_cols <- length(value_cols) > 0
-  stopifnot(
-    "`value_cols` must resolve to one or more columns in `flagged_data` using tidyselect (ex. c(value_a, value_b), c('value_a', 'value_b') or dplyr::starts_with('value_'))" = multiple_value_cols
-  )
+  value_cols <- value_cols |>
+    guess_value_cols(data = flagged_data) |>
+    handle_tidyselect(data = flagged_data, .expect_some = TRUE)
 
   # Ensure flag columns exist
   stopifnot(
