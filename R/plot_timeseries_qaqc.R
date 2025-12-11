@@ -24,16 +24,20 @@ plot_timeseries_qaqc <- function(
       values_to = ".value"
     ) |>
     dplyr::mutate(
-      is_censored = .source |>
+      is_censored = .data$.source |>
         endsWith("_censored") |>
         ifelse("Censored", "Raw Data") |>
         factor(levels = c("Raw Data", "Censored")),
-      .source = .source |> sub(pattern = "_censored", replacement = "")
+      .source = .data$.source |> sub(pattern = "_censored", replacement = "")
     )
 
   # Make time series plot
   time_series <- plot_data |>
-    ggplot2::ggplot(ggplot2::aes(x = date, y = .value, color = .source)) +
+    ggplot2::ggplot(ggplot2::aes_string(
+      x = names(date_col),
+      y = ".value",
+      color = ".source"
+    )) +
     ggplot2::scale_x_datetime(expand = ggplot2::expansion(0)) +
     ggplot2::geom_line() +
     ggplot2::labs(colour = "Source")
@@ -43,7 +47,7 @@ plot_timeseries_qaqc <- function(
 
   # Make density plot
   density <- plot_data |>
-    ggplot2::ggplot(ggplot2::aes(x = .value, color = .source)) +
+    ggplot2::ggplot(ggplot2::aes_string(x = ".value", color = ".source")) +
     ggplot2::geom_density(show.legend = FALSE)
   if (log_scale_density) {
     density <- density + ggplot2::scale_x_log10()

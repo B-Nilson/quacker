@@ -45,7 +45,7 @@ guess_value_cols <- function(data, value_cols = NULL, exclude_dot_cols = TRUE) {
       "guessing `value_cols` from provided data - set `value_cols` directly to quiet this warning"
     )
     value_cols <- dplyr::where(is.numeric) |>
-      tidyselect::eval_select(data = qaqced_data)
+      tidyselect::eval_select(data = data)
     if (exclude_dot_cols) {
       value_cols <- value_cols[!startsWith(names(value_cols), ".")]
     }
