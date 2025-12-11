@@ -54,28 +54,14 @@ flagged_data <- qaqc_timeseries(
   value_cols = c("value_a", "value_b"),
   allowed_range = c(0, 80),
   allowed_steps = list("1 hours" = 5, "3 hours" = 100),
-  allowed_repeats = 3
+  allowed_repeats = 3,
+  precision = 1
 )
 
 flagged_data |>
   dplyr::select(-"date") |> # for cleaner printing
   print(n = 24)
 
-plot(
-  x = flagged_data$date,
-  y = flagged_data$value_b,
-  type = "l",
-  main = "Noisy Timeseries",
-  ylab = "raw value_b",
-  xlab = "date"
-)
-
-plot(
-  x = flagged_data$date,
-  y = flagged_data$value_b |> handyr::swap(flagged_data$.flag_value_b > 0, with = NA),
-  type = "l",
-  main = "Cleaned Timeseries",
-  ylab = "cleaned value_b",
-  xlab = "date"
-)
+flagged_data |> 
+  plot_timeseries_qaqc()
 ```

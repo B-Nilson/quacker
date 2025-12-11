@@ -44,62 +44,61 @@ flagged_data <- qaqc_timeseries(
   value_cols = c("value_a", "value_b"),
   allowed_range = c(0, 80),
   allowed_steps = list("1 hours" = 5, "3 hours" = 100),
-  allowed_repeats = 3
+  allowed_repeats = 3,
+  precision = 1
 )
 
 flagged_data |>
   dplyr::select(-"date") |> # for cleaner printing
   print(n = 24)
-#> # A tibble: 24 × 6
-#>    value_a value_b .flag_value_a .flags_value_a   .flag_value_b .flags_value_b  
-#>      <int>   <dbl>         <int> <list>                   <int> <list>          
-#>  1       1       1             0 <tibble [1 × 5]>             0 <tibble [1 × 5]>
-#>  2       2       1             0 <tibble [1 × 5]>             0 <tibble [1 × 5]>
-#>  3       3       1             0 <tibble [1 × 5]>             0 <tibble [1 × 5]>
-#>  4       4       2             0 <tibble [1 × 5]>             0 <tibble [1 × 5]>
-#>  5       5       2             0 <tibble [1 × 5]>             0 <tibble [1 × 5]>
-#>  6       6       2             0 <tibble [1 × 5]>             0 <tibble [1 × 5]>
-#>  7       7       3             0 <tibble [1 × 5]>             0 <tibble [1 × 5]>
-#>  8       8       3             0 <tibble [1 × 5]>             0 <tibble [1 × 5]>
-#>  9       9       3             0 <tibble [1 × 5]>             0 <tibble [1 × 5]>
-#> 10      10       4             0 <tibble [1 × 5]>             0 <tibble [1 × 5]>
-#> 11      11       4             0 <tibble [1 × 5]>             0 <tibble [1 × 5]>
-#> 12      12       4             0 <tibble [1 × 5]>             0 <tibble [1 × 5]>
-#> 13      13       5             0 <tibble [1 × 5]>             0 <tibble [1 × 5]>
-#> 14      14       5             0 <tibble [1 × 5]>             0 <tibble [1 × 5]>
-#> 15      15       5             0 <tibble [1 × 5]>             0 <tibble [1 × 5]>
-#> 16      16       6             0 <tibble [1 × 5]>             0 <tibble [1 × 5]>
-#> 17      17       6             0 <tibble [1 × 5]>             0 <tibble [1 × 5]>
-#> 18      18       6             0 <tibble [1 × 5]>             0 <tibble [1 × 5]>
-#> 19      19     100             0 <tibble [1 × 5]>             6 <tibble [1 × 5]>
-#> 20      20       0             0 <tibble [1 × 5]>            28 <tibble [1 × 5]>
-#> 21      21       0             0 <tibble [1 × 5]>            28 <tibble [1 × 5]>
-#> 22      22       0             0 <tibble [1 × 5]>            28 <tibble [1 × 5]>
-#> 23      23       0             0 <tibble [1 × 5]>            24 <tibble [1 × 5]>
-#> 24      24      NA             0 <tibble [1 × 5]>             1 <tibble [1 × 5]>
+#> # A tibble: 24 × 8
+#>    value_a value_b .flag_value_a .flags_value_a .flag_name_value_a .flag_value_b
+#>      <int>   <dbl>         <int> <list>         <chr>                      <int>
+#>  1       1       1             0 <tibble>       <NA>                           0
+#>  2       2       1             0 <tibble>       <NA>                           0
+#>  3       3       1             0 <tibble>       <NA>                           0
+#>  4       4       2             0 <tibble>       <NA>                           0
+#>  5       5       2             0 <tibble>       <NA>                           0
+#>  6       6       2             0 <tibble>       <NA>                           0
+#>  7       7       3             0 <tibble>       <NA>                           0
+#>  8       8       3             0 <tibble>       <NA>                           0
+#>  9       9       3             0 <tibble>       <NA>                           0
+#> 10      10       4             0 <tibble>       <NA>                           0
+#> 11      11       4             0 <tibble>       <NA>                           0
+#> 12      12       4             0 <tibble>       <NA>                           0
+#> 13      13       5             0 <tibble>       <NA>                           0
+#> 14      14       5             0 <tibble>       <NA>                           0
+#> 15      15       5             0 <tibble>       <NA>                           0
+#> 16      16       6             0 <tibble>       <NA>                           0
+#> 17      17       6             0 <tibble>       <NA>                           0
+#> 18      18       6             0 <tibble>       <NA>                           0
+#> 19      19     100             0 <tibble>       <NA>                          12
+#> 20      20       0             0 <tibble>       <NA>                           7
+#> 21      21       0             0 <tibble>       <NA>                           7
+#> 22      22       0             0 <tibble>       <NA>                           7
+#> 23      23       0             0 <tibble>       <NA>                           3
+#> 24      24      NA             0 <tibble>       <NA>                          16
+#> # ℹ 2 more variables: .flags_value_b <list>, .flag_name_value_b <chr>
 
-plot(
-  x = flagged_data$date,
-  y = flagged_data$value_b,
-  type = "l",
-  main = "Noisy Timeseries",
-  ylab = "raw value_b",
-  xlab = "date"
-)
+flagged_data |> 
+  plot_timeseries_qaqc()
+#> Warning in guess_date_col(date_col, data = qaqced_ts_data): guessing `date_col`
+#> from provided data - set `date_col` directly to quiet this warning
+#> Warning in guess_value_cols(value_cols, data = qaqced_ts_data): guessing
+#> `value_cols` from provided data - set `value_cols` directly to quiet this
+#> warning
+#> Warning: `aes_string()` was deprecated in ggplot2 3.0.0.
+#> ℹ Please use tidy evaluation idioms with `aes()`.
+#> ℹ See also `vignette("ggplot2-in-packages")` for more information.
+#> ℹ The deprecated feature was likely used in the quacker package.
+#>   Please report the issue to the authors.
+#> This warning is displayed once every 8 hours.
+#> Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+#> generated.
+#> Warning: Removed 7 rows containing missing values or values outside the scale range
+#> (`geom_line()`).
+#> Warning: Removed 7 rows containing non-finite outside the scale range
+#> (`stat_density()`).
 ```
 
 <img src="man/figures/README-example-1.png" width="100%" />
-
-``` r
-
-plot(
-  x = flagged_data$date,
-  y = flagged_data$value_b |> handyr::swap(flagged_data$.flag_value_b > 0, with = NA),
-  type = "l",
-  main = "Cleaned Timeseries",
-  ylab = "cleaned value_b",
-  xlab = "date"
-)
-```
-
-<img src="man/figures/README-example-2.png" width="100%" />

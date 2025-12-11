@@ -1,4 +1,12 @@
+#' Plot a time series of QA/QC'ed data
+#'
+#' @inheritParams qaqc_timeseries
+#' @param qaqced_ts_data data frame containing QA/QC'ed data - typically the output of [qaqc_timeseries()]
+#' @param flag_prefix character string specifying the prefix for the flag columns
+#' @param log_scale_time_series logical indicating whether to use log scale for the time series
+#' @param log_scale_density logical indicating whether to use log scale for the density plot
 #' @import patchwork
+#' @export
 plot_timeseries_qaqc <- function(
   qaqced_ts_data,
   date_col = NULL,
