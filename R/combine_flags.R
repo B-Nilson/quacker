@@ -33,17 +33,10 @@ combine_flags <- function(
     flags <- dplyr::starts_with(paste0(combined_col, "_is_")) |> # names of existing flag columns
       tidyselect::eval_select(data = flagged_data)
     flagged_data <- flagged_data |>
-      # combine flags using binary (0/1 is first flag, 0/2 is second flag, 0/4 is third flag, etc.)
-      # allows for a single integer number to be parsed back into the original flags
+      # create combined binary flag column
       dplyr::mutate(
-        !!combined_col := rowSums(
-          dplyr::across(dplyr::all_of(flags), \(x) {
-            flag_number <- which(names(flags) == dplyr::cur_column())
-            as.integer(x) * 2^(flag_number - 1)
-          }),
-          na.rm = TRUE
-        ),
-        !!combined_col := as.integer(.data[[combined_col]])
+        !!combined_col := dplyr::across(dplyr::all_of(flags)) |>
+          flags_to_binary_number()
       ) |>
       # also move seperated flags to a list column to save on translating back if desired
       tidyr::nest(!!list_col := dplyr::any_of(names(flags))) |>
@@ -67,4 +60,18 @@ combine_flags <- function(
       )
   }
   return(flagged_data)
+}
+
+# Uses matrix multiplication to convert logical flags to a single integer (in binary)
+# (0/1 is first flag, 0/2 is second flag, 0/4 is third flag, etc.)
+flags_to_binary_number <- function(flags) {
+  weights <- 2^(seq_len(ncol(flags)) - 1)
+  as.integer(as.matrix(flags) %*% rev(weights))
+}
+
+flags_from_binary_number <- function(binary_numbers, flag_names) {
+  seq_along(flag_names) |> 
+    lapply(\(i) bitwAnd(binary_numbers, 2^(i - 1)) != 0) |> 
+    stats::setNames(flag_names) |>
+    dplyr::bind_cols()
 }
