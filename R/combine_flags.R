@@ -63,7 +63,7 @@ combine_flags <- function(
 # (0/1 is first flag, 0/2 is second flag, 0/4 is third flag, etc.)
 flags_to_binary_number <- function(flags) {
   weights <- 2^(seq_len(ncol(flags)) - 1)
-  as.integer(as.matrix(flags) %*% rev(weights))
+  as.integer(as.matrix(flags) %*% weights)
 }
 
 flags_from_binary_number <- function(binary_numbers, flag_names) {
