@@ -153,15 +153,15 @@ qaqc_timeseries <- function(
         .names = ".flag_{.col}_{.fn}"
       )
     ) |>
+    # revert gap-filling and sorting
+    dplyr::filter(!is.na(.data$.original_order)) |>
+    dplyr::arrange(.data$.original_order) |>
+    dplyr::select(-".original_order") |>
     # build combined binary flag column for each value
     # and move seperated flags to a list column
     combine_flags(
       value_cols = value_cols,
       flag_prefix = ".flag_",
       list_prefix = ".flags_"
-    ) |>
-    # revert gap-filling and sorting
-    dplyr::filter(!is.na(.data$.original_order)) |>
-    dplyr::arrange(.data$.original_order) |>
-    dplyr::select(-".original_order")
+    )
 }

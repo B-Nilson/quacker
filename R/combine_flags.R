@@ -10,6 +10,8 @@ combine_flags <- function(
   stopifnot(is.character(list_prefix), length(list_prefix) == 1)
   stopifnot(is.character(name_prefix), length(name_prefix) == 1)
 
+  flagged_data <- dplyr::ungroup(flagged_data)
+
   value_cols <- value_cols |>
     guess_value_cols(data = flagged_data) |>
     handle_tidyselect(data = flagged_data, .expect_some = TRUE)
