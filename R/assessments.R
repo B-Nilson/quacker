@@ -46,7 +46,8 @@ assess_spiking <- function(x, max_steps = list("1 hours" = Inf), time_step) {
 
   # Handle edge case where data cannot possibly be spiking
   smallest_threshold <- min(unlist(max_steps), na.rm = TRUE)
-  largest_diff <- max(x, na.rm = TRUE) - min(x, na.rm = TRUE)
+  largest_diff <- (handyr::max(x, na.rm = TRUE) - handyr::min(x, na.rm = TRUE)) |> 
+    handyr::swap(NA, with = 0)
   if (largest_diff <= smallest_threshold) {
     return(logical(length(x)))
   }
