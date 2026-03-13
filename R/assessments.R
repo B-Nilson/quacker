@@ -5,7 +5,8 @@ assess_repeating <- function(x, max_repeats = 3) {
   }
 
   # replace NA's with the min - 1 (i.e. not repeating)
-  default <- min(x, na.rm = TRUE) - 1
+  default <- (handyr::min(x, na.rm = TRUE) - 1) |> 
+    handyr::swap(NA, with = -1)
   is_missing <- is.na(x)
   x[is_missing] <- default
 
